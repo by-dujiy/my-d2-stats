@@ -8,6 +8,7 @@ import {
   Bar,
   CartesianGrid,
   ResponsiveContainer,
+  ReferenceLine,
   Tooltip
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -96,6 +97,11 @@ export function DiffChart({ data }: { data: diffData[] }) {
   const maxDiff = Math.ceil(Math.max(...data.map(d => Math.abs(d.diff))) / 10) * 10
   const maxCoord = Math.max(maxTotal, maxDiff)
 
+  const step = Math.max(Math.ceil(maxCoord / 5 / 10) * 10, 10)
+  const top = Math.ceil(maxCoord / step) * step
+  const ticks: number[] = []
+  for (let v = -top; v <= top; v += step) ticks.push(v)
+
   return (
     <Card>
       <CardHeader>
@@ -116,7 +122,8 @@ export function DiffChart({ data }: { data: diffData[] }) {
                   height={50}
                   textAnchor='end' 
                 />
-                <YAxis domain={[-maxCoord, maxCoord]} tickCount={11} width={40} />
+                <YAxis domain={[-top, top]} ticks={ticks} width={40} />
+                <ReferenceLine y={0} stroke="#c8c9ca" strokeWidth={1.5} />
                 <Line
                   dataKey='diff'
                   type='monotone'

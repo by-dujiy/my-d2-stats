@@ -6,6 +6,8 @@ import { DiffChart, type diffData } from '@/components/charts/diffChart'
 const DAY = 86400
 const WEEK = 7 * DAY
 
+const CUTOFF = Math.floor(new Date('2025-01-01T00:00:00Z').getTime() / 1000)
+
 function isWin(playerSlot: number, radiantWin: boolean): boolean {
   return playerSlot < 128 ? radiantWin : !radiantWin
 }
@@ -44,9 +46,16 @@ export default async function WinLossChart() {
     .from(matches)
     .orderBy(asc(matches.startTime))
   
-  const chartData : diffData[] = sundaysUntilNow(matchesData[0].startTime)
+  const chartData : diffData[] = sundaysUntilNow(CUTOFF)
+
+  // матчи до рубежа не разбиваем по неделям — копим их чистую разницу в baseline
+  let baseline = 0
 
   matchesData.forEach(match => {
+    if (match.startTime < CUTOFF) {
+      baseline += isWin(match.playerSlot, match.radiantWin) ? 1 : -1
+      return
+    }
     for (const data of chartData) {
       if (match.startTime < data.timeline) {
         if (isWin(match.playerSlot, match.radiantWin)) {
@@ -59,7 +68,7 @@ export default async function WinLossChart() {
     }
   })
 
-  let cumulative = 0
+  let cumulative = baseline
   chartData.forEach(data => {
     const weekDiff = data.wins - data.losses
     cumulative += weekDiff
