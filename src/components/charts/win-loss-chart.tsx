@@ -30,7 +30,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload
   return (
-    <div className="rounded-lg border bg-white p-3 shadow text-sm">
+    <div className="rounded-lg border bg-card text-card-foreground p-3 shadow text-sm">
       <p className="font-medium mb-1">{d.label}</p>
       <p className="text-green-600">Wins: {d.wins}</p>
       <p className="text-red-500">Losses: {d.losses}</p>

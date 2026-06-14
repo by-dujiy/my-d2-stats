@@ -27,7 +27,14 @@ function sundaysUntilNow(ts: number) {
   const start = getSundayFrom(ts)
   const end = getCurrentSunday()
   const result = []
-  for (let t = start; t <= end; t += WEEK) result.push({ timeline: t, wins: 0, losses: 0, diff: 0 })
+  for (let t = start; t <= end; t += WEEK) result.push({
+    timeline: t,
+    wins: 0,
+    losses: 0,
+    lossesNeg: 0,
+    total: 0,
+    diff: 0
+  })
   return result
 }
 
@@ -57,6 +64,7 @@ export default async function WinLossChart() {
     const weekDiff = data.wins - data.losses
     cumulative += weekDiff
     data.diff = cumulative
+    data.lossesNeg = -data.losses
   })
 
   return (
